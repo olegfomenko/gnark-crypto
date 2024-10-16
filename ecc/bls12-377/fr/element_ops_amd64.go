@@ -20,6 +20,15 @@
 package fr
 
 //go:noescape
+func smallerThanModulus(x *Element) bool
+
+// smallerThanModulus returns true if z < q
+// This is not constant time
+func (z *Element) smallerThanModulus() bool {
+	return smallerThanModulus(z)
+}
+
+//go:noescape
 func MulBy3(x *Element)
 
 //go:noescape

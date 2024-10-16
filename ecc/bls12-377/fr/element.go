@@ -353,12 +353,6 @@ func (z *Element) SetRandom() (*Element, error) {
 	}
 }
 
-// smallerThanModulus returns true if z < q
-// This is not constant time
-func (z *Element) smallerThanModulus() bool {
-	return (z[3] < q3 || (z[3] == q3 && (z[2] < q2 || (z[2] == q2 && (z[1] < q1 || (z[1] == q1 && (z[0] < q0)))))))
-}
-
 // One returns 1
 func One() Element {
 	var one Element
