@@ -2438,41 +2438,46 @@ done_17:
 	RET
 
 
-// smallerThanModulus(x *Element) bool
-TEXT ·smallerThanModulus(SB), NOSPLIT, $0-8
-    MOVQ x+0(FP), AX
 
-    MOVQ 0(AX), DX  // DX = z[3]
-    MOVQ 8(AX), CX  // CX = z[2]
-    MOVQ 16(AX), BX // BX = z[1]
-    MOVQ 24(AX), SI // SI = z[0]
+// smallerThanModulus(x *Element, res *bool)
+TEXT ·smallerThanModulus(SB), NOSPLIT, $0
+    MOVQ x+0(FP), BX
+    MOVB res+8(FP), AX
+
+    MOVQ 24(BX), DX
 
     // Check: z[3] < q3
     CMPQ DX, ·qElement+24(SB)
     JB  true            // Jump to 'true' if z[3] < q3
     JA  false           // Jump to 'false' if z[3] > q3
 
+    MOVQ 16(BX), DX
+
     // If z[3] == q3, check: z[2] < q2
-    CMPQ CX, ·qElement+16(SB)
+    CMPQ DX, ·qElement+16(SB)
     JB  true
     JA  false
+
+    MOVQ 8(BX), DX
 
     // If z[2] == q2, check: z[1] < q1
-    CMPQ BX, ·qElement+8(SB)
+    CMPQ DX, ·qElement+8(SB)
     JB  true
     JA  false
+
+    MOVQ 0(BX), DX
 
     // If z[1] == q1, check: z[0] < q0
-    CMPQ SI, ·qElement+0(SB)
+    CMPQ DX, ·qElement+0(SB)
     JB  true
-    JA  false
 
+    // If all elements are equal to the modulus, return false
 false:
     // Return false (0).
-    MOVB $0, ret+32(FP)
+    MOVB $0, (AX)
     RET
 
 true:
     // Return true (1).
-    MOVB $1, ret+32(FP)
+    MOVB $1, (AX)
     RET

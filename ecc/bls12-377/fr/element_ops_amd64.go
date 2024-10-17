@@ -20,12 +20,14 @@
 package fr
 
 //go:noescape
-func smallerThanModulus(x *Element) bool
+func smallerThanModulus(x *Element, res *bool)
 
 // smallerThanModulus returns true if z < q
 // This is not constant time
 func (z *Element) smallerThanModulus() bool {
-	return smallerThanModulus(z)
+	res := false
+	smallerThanModulus(z, &res)
+	return res
 }
 
 //go:noescape
