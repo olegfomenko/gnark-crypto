@@ -2442,7 +2442,7 @@ done_17:
 // smallerThanModulus(x *Element, res *bool)
 TEXT ·smallerThanModulus(SB), NOSPLIT, $0
     MOVQ x+0(FP), BX
-    MOVB res+8(FP), AX
+    MOVQ res+8(FP), AX
 
     MOVQ 24(BX), DX
 
