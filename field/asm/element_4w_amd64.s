@@ -2488,8 +2488,46 @@ loop_18:
 done_17:
 	RET
 
-// testMul3(res, a, b, c *Element)
-TEXT ·testMul3(SB), NOSPLIT, $24-32
+TEXT ·add(SB), NOSPLIT, $8-24
+    MOVQ x+8(FP), AX
+    MOVQ y+16(FP), BX
+    MOVQ z+0(FP), CX
+
+    // z0=x0+y0
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+    // z1=x1+y1
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+    // z2=x2+y2
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+    // z3=x3+y3
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    RET
+
+// testAdd3(res, a, b, c *Element)
+TEXT ·testAdd3(SB), NOSPLIT, $24-32
     NO_LOCAL_POINTERS
 
     MOVQ res+0(FP), AX

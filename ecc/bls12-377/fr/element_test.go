@@ -20,6 +20,7 @@ import (
 	"crypto/rand"
 	"encoding/json"
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"math/big"
 	"math/bits"
 
@@ -2895,16 +2896,34 @@ func approximateRef(x *Element) uint64 {
 	return hi.Uint64()
 }
 
-func TestCustomMul3(t *testing.T) {
+func TestCustomAddCompared(t *testing.T) {
+	for i := 0; i < 100; i++ {
+		x, _ := new(Element).SetRandom()
+		y, _ := new(Element).SetRandom()
+
+		res1 := new(Element)
+		res2 := new(Element)
+
+		add(res1, x, y)
+		res2.Add(x, y)
+
+		assert.Equal(t, res1.Cmp(res2), 0)
+	}
+}
+
+func TestCustomAdd(t *testing.T) {
 	a := new(Element).SetInt64(10)
+	fmt.Println(a)
 	b := new(Element).SetInt64(5)
-	c := new(Element).SetInt64(3)
+	fmt.Println(b)
+	//c := new(Element).SetInt64(3)
 
 	res := new(Element)
 
-	testMul3(res, a, b, c)
+	add(res, a, b)
 
 	fmt.Println(res.String())
+	fmt.Println(res)
 }
 
 func BenchmarkNative(b *testing.B) {
@@ -2915,7 +2934,7 @@ func BenchmarkNative(b *testing.B) {
 		z, _ := new(Element).SetRandom()
 		res := new(Element)
 		b.StartTimer()
-		testMul3(res, x, y, z)
+		testAdd3(res, x, y, z)
 	}
 }
 
@@ -2961,5 +2980,27 @@ func BenchmarkPow2(b *testing.B) {
 		res := new(Element)
 		b.StartTimer()
 		NativePow17(res, x)
+	}
+}
+
+func BenchmarkAdd1(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		x, _ := new(Element).SetRandom()
+		y, _ := new(Element).SetRandom()
+		res := new(Element)
+		b.StartTimer()
+		add(res, x, y)
+	}
+}
+
+func BenchmarkAdd2(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		x, _ := new(Element).SetRandom()
+		y, _ := new(Element).SetRandom()
+		res := new(Element)
+		b.StartTimer()
+		res.Add(x, y)
 	}
 }

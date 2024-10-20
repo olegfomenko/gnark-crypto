@@ -20,10 +20,13 @@
 package fr
 
 //go:noescape
+func add(z, x, y *Element)
+
+//go:noescape
 func pow17(res, a *Element)
 
 //go:noescape
-func testMul3(res, a, b, c *Element)
+func testAdd3(res, a, b, c *Element)
 
 //go:noescape
 func MulBy3(x *Element)
