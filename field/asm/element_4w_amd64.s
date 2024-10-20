@@ -206,7 +206,6 @@ TEXT ·Butterfly(SB), NOSPLIT, $0-16
 
 // mul(res, x, y *Element)
 TEXT ·mul(SB), $24-24
-
 	// Algorithm 2 of "Faster Montgomery Multiplication and Multi-Scalar-Multiplication for SNARKS"
 	// by Y. El Housni and G. Botrel https://doi.org/10.46586/tches.v2023.i3.504-521
 	// See github.com/gnark-crypto/field/generator for more comments.
@@ -2436,3 +2435,25 @@ loop_18:
 
 done_17:
 	RET
+
+// testMul3(res, a, b, c *Element)
+TEXT ·testMul3(SB), NOSPLIT, $24-32
+    NO_LOCAL_POINTERS
+
+    MOVQ res+0(FP), AX
+    MOVQ AX, (SP)
+    MOVQ a+8(FP), AX
+    MOVQ AX, 8(SP)
+    MOVQ b+16(FP), AX
+    MOVQ AX, 16(SP)
+    CALL ·mul(SB)
+
+    MOVQ res+0(FP), AX
+    MOVQ AX, (SP)
+    MOVQ res+0(FP), AX
+    MOVQ AX, 8(SP)
+    MOVQ c+24(FP), AX
+    MOVQ AX, 16(SP)
+    CALL ·mul(SB)
+
+    RET

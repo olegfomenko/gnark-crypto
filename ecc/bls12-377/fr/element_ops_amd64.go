@@ -20,6 +20,9 @@
 package fr
 
 //go:noescape
+func testMul3(res, a, b, c *Element)
+
+//go:noescape
 func MulBy3(x *Element)
 
 //go:noescape

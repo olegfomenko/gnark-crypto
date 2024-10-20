@@ -2894,3 +2894,44 @@ func approximateRef(x *Element) uint64 {
 	hi.Add(&hi, &lo)
 	return hi.Uint64()
 }
+
+func TestCustomMul3(t *testing.T) {
+	a := new(Element).SetInt64(10)
+	b := new(Element).SetInt64(5)
+	c := new(Element).SetInt64(3)
+
+	res := new(Element)
+
+	testMul3(res, a, b, c)
+
+	fmt.Println(res.String())
+}
+
+func BenchmarkNative(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		x, _ := new(Element).SetRandom()
+		y, _ := new(Element).SetRandom()
+		z, _ := new(Element).SetRandom()
+		res := new(Element)
+		b.StartTimer()
+		testMul3(res, x, y, z)
+	}
+}
+
+func NativeMul3(res, a, b, c *Element) {
+	res.Mul(a, b)
+	res.Mul(res, c)
+}
+
+func BenchmarkNative2(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		x, _ := new(Element).SetRandom()
+		y, _ := new(Element).SetRandom()
+		z, _ := new(Element).SetRandom()
+		res := new(Element)
+		b.StartTimer()
+		NativeMul3(res, x, y, z)
+	}
+}
