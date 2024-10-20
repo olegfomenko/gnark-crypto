@@ -2935,3 +2935,21 @@ func BenchmarkNative2(b *testing.B) {
 		NativeMul3(res, x, y, z)
 	}
 }
+
+func BenchmarkSquare1(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		x, _ := new(Element).SetRandom()
+		b.StartTimer()
+		x.SquareAsm(x)
+	}
+}
+
+func BenchmarkSquare2(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		x, _ := new(Element).SetRandom()
+		b.StartTimer()
+		x.Square(x)
+	}
+}

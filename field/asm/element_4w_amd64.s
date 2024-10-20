@@ -204,6 +204,21 @@ TEXT ·Butterfly(SB), NOSPLIT, $0-16
 	MOVQ DI, 24(AX)
 	RET
 
+// testMul3(res, a *Element)
+TEXT ·square(SB), NOSPLIT, $24-16
+    NO_LOCAL_POINTERS
+
+    MOVQ res+0(FP), AX
+    MOVQ AX, (SP)
+    MOVQ a+8(FP), AX
+    MOVQ AX, 8(SP)
+    MOVQ a+8(FP), AX
+    MOVQ AX, 16(SP)
+    CALL ·mul(SB)
+
+    RET
+
+
 // mul(res, x, y *Element)
 TEXT ·mul(SB), $24-24
 	// Algorithm 2 of "Faster Montgomery Multiplication and Multi-Scalar-Multiplication for SNARKS"
@@ -2455,5 +2470,4 @@ TEXT ·testMul3(SB), NOSPLIT, $24-32
     MOVQ c+24(FP), AX
     MOVQ AX, 16(SP)
     CALL ·mul(SB)
-
     RET
