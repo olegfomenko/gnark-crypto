@@ -204,13 +204,50 @@ TEXT ·Butterfly(SB), NOSPLIT, $0-16
 	MOVQ DI, 24(AX)
 	RET
 
-// testMul3(res, a *Element)
-TEXT ·square(SB), NOSPLIT, $24-16
+// pow17(res, a *Element)
+TEXT ·pow17(SB), NOSPLIT, $24-16
     NO_LOCAL_POINTERS
 
+    // a^2
     MOVQ res+0(FP), AX
     MOVQ AX, (SP)
     MOVQ a+8(FP), AX
+    MOVQ AX, 8(SP)
+    MOVQ a+8(FP), AX
+    MOVQ AX, 16(SP)
+    CALL ·mul(SB)
+
+    // a^4
+    MOVQ res+0(FP), AX
+    MOVQ AX, (SP)
+    MOVQ res+0(FP), AX
+    MOVQ AX, 8(SP)
+    MOVQ res+0(FP), AX
+    MOVQ AX, 16(SP)
+    CALL ·mul(SB)
+
+    // a^8
+    MOVQ res+0(FP), AX
+    MOVQ AX, (SP)
+    MOVQ res+0(FP), AX
+    MOVQ AX, 8(SP)
+    MOVQ res+0(FP), AX
+    MOVQ AX, 16(SP)
+    CALL ·mul(SB)
+
+    // a^16
+    MOVQ res+0(FP), AX
+    MOVQ AX, (SP)
+    MOVQ res+0(FP), AX
+    MOVQ AX, 8(SP)
+    MOVQ res+0(FP), AX
+    MOVQ AX, 16(SP)
+    CALL ·mul(SB)
+
+    // a^17
+    MOVQ res+0(FP), AX
+    MOVQ AX, (SP)
+    MOVQ res+0(FP), AX
     MOVQ AX, 8(SP)
     MOVQ a+8(FP), AX
     MOVQ AX, 16(SP)

@@ -20,7 +20,7 @@
 package fr
 
 //go:noescape
-func square(res, a *Element)
+func pow17(res, a *Element)
 
 //go:noescape
 func testMul3(res, a, b, c *Element)
@@ -210,10 +210,5 @@ func (z *Element) Mul(x, y *Element) *Element {
 func (z *Element) Square(x *Element) *Element {
 	// see Mul for doc.
 	mul(z, x, x)
-	return z
-}
-
-func (z *Element) SquareAsm(x *Element) *Element {
-	square(z, x)
 	return z
 }

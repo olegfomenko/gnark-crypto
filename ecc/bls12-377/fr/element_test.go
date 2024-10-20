@@ -2936,20 +2936,30 @@ func BenchmarkNative2(b *testing.B) {
 	}
 }
 
-func BenchmarkSquare1(b *testing.B) {
+func NativePow17(res, a *Element) {
+	res.Mul(a, a)     //2
+	res.Mul(res, res) //4
+	res.Mul(res, res) //8
+	res.Mul(res, res) //16
+	res.Mul(res, a)   //17
+}
+
+func BenchmarkPow1(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
 		x, _ := new(Element).SetRandom()
+		res := new(Element)
 		b.StartTimer()
-		x.SquareAsm(x)
+		pow17(res, x)
 	}
 }
 
-func BenchmarkSquare2(b *testing.B) {
+func BenchmarkPow2(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
 		x, _ := new(Element).SetRandom()
+		res := new(Element)
 		b.StartTimer()
-		x.Square(x)
+		NativePow17(res, x)
 	}
 }
