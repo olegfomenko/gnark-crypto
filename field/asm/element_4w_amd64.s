@@ -204,58 +204,6 @@ TEXT ·Butterfly(SB), NOSPLIT, $0-16
 	MOVQ DI, 24(AX)
 	RET
 
-// pow17(res, a *Element)
-TEXT ·pow17(SB), NOSPLIT, $24-16
-    NO_LOCAL_POINTERS
-
-    // a^2
-    MOVQ res+0(FP), AX
-    MOVQ AX, (SP)
-    MOVQ a+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ a+8(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·mul(SB)
-
-    // a^4
-    MOVQ res+0(FP), AX
-    MOVQ AX, (SP)
-    MOVQ res+0(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ res+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·mul(SB)
-
-    // a^8
-    MOVQ res+0(FP), AX
-    MOVQ AX, (SP)
-    MOVQ res+0(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ res+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·mul(SB)
-
-    // a^16
-    MOVQ res+0(FP), AX
-    MOVQ AX, (SP)
-    MOVQ res+0(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ res+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·mul(SB)
-
-    // a^17
-    MOVQ res+0(FP), AX
-    MOVQ AX, (SP)
-    MOVQ res+0(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ a+8(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·mul(SB)
-
-    RET
-
-
 // mul(res, x, y *Element)
 TEXT ·mul(SB), $24-24
 	// Algorithm 2 of "Faster Montgomery Multiplication and Multi-Scalar-Multiplication for SNARKS"
@@ -2488,6 +2436,58 @@ loop_18:
 done_17:
 	RET
 
+// pow17(res, a *Element)
+TEXT ·pow17(SB), NOSPLIT, $24-16
+    NO_LOCAL_POINTERS
+
+    // a^2
+    MOVQ res+0(FP), AX
+    MOVQ AX, (SP)
+    MOVQ a+8(FP), AX
+    MOVQ AX, 8(SP)
+    MOVQ a+8(FP), AX
+    MOVQ AX, 16(SP)
+    CALL ·mul(SB)
+
+    // a^4
+    MOVQ res+0(FP), AX
+    MOVQ AX, (SP)
+    MOVQ res+0(FP), AX
+    MOVQ AX, 8(SP)
+    MOVQ res+0(FP), AX
+    MOVQ AX, 16(SP)
+    CALL ·mul(SB)
+
+    // a^8
+    MOVQ res+0(FP), AX
+    MOVQ AX, (SP)
+    MOVQ res+0(FP), AX
+    MOVQ AX, 8(SP)
+    MOVQ res+0(FP), AX
+    MOVQ AX, 16(SP)
+    CALL ·mul(SB)
+
+    // a^16
+    MOVQ res+0(FP), AX
+    MOVQ AX, (SP)
+    MOVQ res+0(FP), AX
+    MOVQ AX, 8(SP)
+    MOVQ res+0(FP), AX
+    MOVQ AX, 16(SP)
+    CALL ·mul(SB)
+
+    // a^17
+    MOVQ res+0(FP), AX
+    MOVQ AX, (SP)
+    MOVQ res+0(FP), AX
+    MOVQ AX, 8(SP)
+    MOVQ a+8(FP), AX
+    MOVQ AX, 16(SP)
+    CALL ·mul(SB)
+
+    RET
+
+// add(z, x, y *Element)
 TEXT ·add(SB), NOSPLIT, $8-24
     MOVQ x+8(FP), AX
     MOVQ y+16(FP), BX
@@ -2524,25 +2524,4 @@ TEXT ·add(SB), NOSPLIT, $8-24
     MOVQ BX, 16(CX)
     MOVQ DX, 24(CX)
 
-    RET
-
-// testAdd3(res, a, b, c *Element)
-TEXT ·testAdd3(SB), NOSPLIT, $24-32
-    NO_LOCAL_POINTERS
-
-    MOVQ res+0(FP), AX
-    MOVQ AX, (SP)
-    MOVQ a+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ b+16(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·mul(SB)
-
-    MOVQ res+0(FP), AX
-    MOVQ AX, (SP)
-    MOVQ res+0(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ c+24(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·mul(SB)
     RET

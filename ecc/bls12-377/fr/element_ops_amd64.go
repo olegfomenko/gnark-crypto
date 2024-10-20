@@ -26,9 +26,6 @@ func add(z, x, y *Element)
 func pow17(res, a *Element)
 
 //go:noescape
-func testAdd3(res, a, b, c *Element)
-
-//go:noescape
 func MulBy3(x *Element)
 
 //go:noescape
@@ -213,5 +210,10 @@ func (z *Element) Mul(x, y *Element) *Element {
 func (z *Element) Square(x *Element) *Element {
 	// see Mul for doc.
 	mul(z, x, x)
+	return z
+}
+
+func (z *Element) Add(x, y *Element) *Element {
+	add(z, x, y)
 	return z
 }
