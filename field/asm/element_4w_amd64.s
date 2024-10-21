@@ -2529,25 +2529,4712 @@ TEXT ·add(SB), NOSPLIT, $8-24
 TEXT ·mimcEncrypt(SB), NOSPLIT, $24-24
     NO_LOCAL_POINTERS
 
-    //i = 0
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
 
     LEAQ ·mimcConstants(SB), DX
-    ADDQ $0, DX
+    ADDQ $0, BX // set y
 
-    MOVQ tmp+16(FP), AX
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
     MOVQ AX, (SP)
     MOVQ tmp+16(FP), AX
     MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $32, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $64, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $96, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $128, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $160, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $192, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $224, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $256, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $288, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $320, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $352, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $384, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $416, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $448, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $480, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $512, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $544, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $576, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $608, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $640, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $672, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $704, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $736, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $768, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $800, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $832, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $864, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $896, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $928, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $960, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $992, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1024, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1056, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1088, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1120, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1152, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1184, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1216, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1248, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1280, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1312, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1344, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1376, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1408, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1440, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1472, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1504, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1536, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1568, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1600, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1632, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1664, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1696, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1728, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1760, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1792, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1824, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1856, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1888, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1920, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    MOVQ m+8(FP), AX
+    MOVQ AX, (SP)
+    MOVQ tmp+16(FP), AX
+    MOVQ AX, 8(SP)
+    CALL ·pow17(SB)
+    MOVQ tmp+16(FP), CX // res
+    MOVQ m+8(FP), AX // x
+    MOVQ h+0(FP), BX // y
+
+
+    // add tmp = m + h
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), SI
+    ADDQ    DX, SI
+    MOVQ    SI, 0(CX)
+
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 8(CX)
+
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), SI
+    ADCQ    DX, SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), SI
+    ADCQ    SI, DX
+
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
+
+    LEAQ ·mimcConstants(SB), DX
+    ADDQ $1952, BX // set y
+
+    // CX already set (in prev op)
+    MOVQ tmp+16(FP), AX // set x
+
+    // add tmp = tmp + constant
+    ADDQ    0(BX), SI
+    MOVQ    SI, 0(CX)
+
+    ADDQ    8(BX), SI
+    MOVQ    SI, 8(CX)
+
+    ADDQ    16(BX), SI
+    MOVQ    SI, 16(CX)
+
+    ADDQ    24(BX), SI
+    MOVQ    SI, 16(CX)
+
+    MOVQ 24(CX), DX
+    MOVQ 16(CX), BX
+    MOVQ 8(CX), SI
+    MOVQ 0(CX), DI
+
+    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+
+    MOVQ DI, 0(CX)
+    MOVQ SI, 8(CX)
+    MOVQ BX, 16(CX)
+    MOVQ DX, 24(CX)
+
+    //finish add
 
     MOVQ m+8(FP), AX
     MOVQ AX, (SP)
@@ -2555,1591 +7242,6 @@ TEXT ·mimcEncrypt(SB), NOSPLIT, $24-24
     MOVQ AX, 8(SP)
     CALL ·pow17(SB)
 
-    //i = 1
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $32, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 2
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $64, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 3
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $96, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 4
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $128, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 5
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $160, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 6
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $192, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 7
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $224, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 8
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $256, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 9
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $288, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 10
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $320, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 11
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $352, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 12
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $384, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 13
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $416, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 14
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $448, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 15
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $480, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 16
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $512, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 17
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $544, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 18
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $576, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 19
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $608, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 20
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $640, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 21
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $672, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 22
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $704, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 23
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $736, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 24
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $768, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 25
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $800, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 26
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $832, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 27
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $864, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 28
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $896, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 29
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $928, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 30
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $960, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 31
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $992, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 32
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1024, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 33
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1056, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 34
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1088, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 35
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1120, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 36
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1152, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 37
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1184, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 38
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1216, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 39
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1248, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 40
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1280, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 41
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1312, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 42
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1344, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 43
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1376, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 44
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1408, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 45
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1440, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 46
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1472, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 47
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1504, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 48
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1536, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 49
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1568, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 50
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1600, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 51
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1632, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 52
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1664, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 53
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1696, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 54
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1728, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 55
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1760, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 56
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1792, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 57
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1824, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 58
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1856, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 59
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1888, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 60
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1920, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
-
-    //i = 61
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    LEAQ ·mimcConstants(SB), DX
-    ADDQ $1952, DX
-
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ DX, AX
-    MOVQ AX, 16(SP)
-    CALL ·add(SB)
-
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    CALL ·pow17(SB)
 
     MOVQ m+8(FP), AX
     MOVQ AX, (SP)
@@ -4149,4 +7251,5 @@ TEXT ·mimcEncrypt(SB), NOSPLIT, $24-24
     MOVQ AX, 16(SP)
     CALL ·add(SB)
     RET
+
 
