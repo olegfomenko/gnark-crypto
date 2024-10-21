@@ -2939,7 +2939,7 @@ func BenchmarkPow2(b *testing.B) {
 	}
 }
 
-func BenchmarkAdd1(b *testing.B) {
+func BenchmarkAddASM(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
 		x, _ := new(Element).SetRandom()
@@ -2950,15 +2950,33 @@ func BenchmarkAdd1(b *testing.B) {
 	}
 }
 
-func BenchmarkAdd2(b *testing.B) {
+func BenchmarkAddNative(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
 		x, _ := new(Element).SetRandom()
 		y, _ := new(Element).SetRandom()
 		res := new(Element)
 		b.StartTimer()
-		res.Add(x, y)
+		res.AddNative(x, y)
 	}
+}
+
+func (z *Element) AddNative(x, y *Element) *Element {
+	var carry uint64
+	z[0], carry = bits.Add64(x[0], y[0], 0)
+	z[1], carry = bits.Add64(x[1], y[1], carry)
+	z[2], carry = bits.Add64(x[2], y[2], carry)
+	z[3], _ = bits.Add64(x[3], y[3], carry)
+
+	// if z ⩾ q → z -= q
+	if !z.smallerThanModulus() {
+		var b uint64
+		z[0], b = bits.Sub64(z[0], q0, 0)
+		z[1], b = bits.Sub64(z[1], q1, b)
+		z[2], b = bits.Sub64(z[2], q2, b)
+		z[3], _ = bits.Sub64(z[3], q3, b)
+	}
+	return z
 }
 
 func TestMIMC(t *testing.T) {
