@@ -109,8 +109,6 @@ func BenchmarkEncryptASM(b *testing.B) {
 }
 
 func encryptTest1(h, m *fr.Element) *fr.Element {
-	once.Do(initConstants) // init constants
-
 	var tmp fr.Element
 	for i := 0; i < mimcNbRounds; i++ {
 		// m = (m+k+c)^**17
@@ -126,8 +124,6 @@ func encryptTest1(h, m *fr.Element) *fr.Element {
 }
 
 func encryptTest2(m, h fr.Element) fr.Element {
-	once.Do(initConstants) // init constants
-
 	var tmp fr.Element
 	for i := 0; i < mimcNbRounds; i++ {
 		// m = (m+k+c)^**17
