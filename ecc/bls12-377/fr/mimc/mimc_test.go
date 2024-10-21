@@ -82,6 +82,29 @@ func BenchmarkEncryptASM(b *testing.B) {
 	}
 }
 
+func BenchmarkEncryptSemiASM(b *testing.B) {
+	initConstants()
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		m, _ := new(fr.Element).SetRandom()
+		h, _ := new(fr.Element).SetRandom()
+		b.StartTimer()
+		MIMCEncryptSemi(h, m)
+	}
+}
+
+func MIMCEncryptSemi(h, m *fr.Element) {
+	once.Do(initConstants) // init constants
+
+	for i := 0; i < mimcNbRounds; i++ {
+		fr.MIMCStep(h, m, &mimcConstants[i])
+	}
+
+	m.Add(m, h)
+}
+
 func BenchmarkEncryptNative(b *testing.B) {
 	initConstants()
 
