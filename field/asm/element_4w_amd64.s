@@ -2532,48 +2532,47 @@ TEXT ·mimcEncrypt(SB), NOSPLIT, $24-24
 
     XORQ R15, R15
 
+    MOVQ h+0(FP), R8
+    MOVQ m+8(FP), R9
+    MOVQ tmp+16(FP), R10
+
 loop_mimc:
     CMPQ R15, $62
     JEQ loop_mimc_end
 
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
+    MOVQ R10, (SP)
+    MOVQ R8, 8(SP)
+    MOVQ R9, 16(SP)
     CALL ·add(SB)
 
     LEAQ ·mimcConstants(SB), DX
 
-    MOVQ R15, CX
-    SHLQ $5, CX
-    ADDQ DX, CX
+    MOVQ R15, DI
+    SHLQ $5, DI
+    ADDQ DX, DI
 
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ CX, AX
-    MOVQ AX, 16(SP)
+    MOVQ R10, (SP)
+    MOVQ R10, 8(SP)
+    MOVQ DI, 16(SP)
     CALL ·add(SB)
 
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ tmp+16(FP), AX
-    MOVQ AX, 8(SP)
+
+    MOVQ R9, (SP)
+    MOVQ R10, 8(SP)
+    MOVQ R8, 16(SP)
     CALL ·pow17(SB)
+
+    MOVQ (SP), R9
+    MOVQ 8(SP), R10
+    MOVQ 16(SP), R8
 
     INCQ    R15
     JMP loop_mimc
 
 loop_mimc_end:
-    MOVQ m+8(FP), AX
-    MOVQ AX, (SP)
-    MOVQ m+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ h+0(FP), AX
-    MOVQ AX, 16(SP)
+    MOVQ R9, (SP)
+    MOVQ R9, 8(SP)
+    MOVQ R8, 16(SP)
     CALL ·add(SB)
     RET
 
