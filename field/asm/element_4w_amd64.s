@@ -2437,54 +2437,58 @@ done_17:
 	RET
 
 // pow17(res, a *Element)
-TEXT ·pow17(SB), NOSPLIT, $24-16
+TEXT ·pow17(SB), NOSPLIT, $32-16
     NO_LOCAL_POINTERS
 
-    // a^2
     MOVQ res+0(FP), AX
+    MOVQ a+8(FP), BX
+
+    // a^2
     MOVQ AX, (SP)
-    MOVQ a+8(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ a+8(FP), AX
-    MOVQ AX, 16(SP)
+    MOVQ BX, 8(SP)
+    MOVQ BX, 16(SP)
     CALL ·mul(SB)
+
+    MOVQ (SP), AX
+    MOVQ 8(SP), BX
 
     // a^4
-    MOVQ res+0(FP), AX
-    MOVQ AX, (SP)
-    MOVQ res+0(FP), AX
+    //MOVQ AX, (SP)
     MOVQ AX, 8(SP)
-    MOVQ res+0(FP), AX
     MOVQ AX, 16(SP)
+    MOVQ BX, 24(SP) // only to save
     CALL ·mul(SB)
+
+    //MOVQ (SP), AX
+    //MOVQ 24(SP), BX
 
     // a^8
-    MOVQ res+0(FP), AX
-    MOVQ AX, (SP)
-    MOVQ res+0(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ res+0(FP), AX
-    MOVQ AX, 16(SP)
+    //MOVQ AX, (SP)
+    //MOVQ AX, 8(SP)
+    //MOVQ AX, 16(SP)
+    //MOVQ BX, 24(SP) // only to save
     CALL ·mul(SB)
+
+    //MOVQ (SP), AX
+    //MOVQ 24(SP), BX
 
     // a^16
-    MOVQ res+0(FP), AX
-    MOVQ AX, (SP)
-    MOVQ res+0(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ res+0(FP), AX
-    MOVQ AX, 16(SP)
+    //MOVQ AX, (SP)
+    //MOVQ AX, 8(SP)
+    //MOVQ AX, 16(SP)
+    //MOVQ BX, 24(SP) // only to save
     CALL ·mul(SB)
+
+    MOVQ (SP), AX
+    MOVQ 24(SP), BX
 
     // a^17
-    MOVQ res+0(FP), AX
-    MOVQ AX, (SP)
-    MOVQ res+0(FP), AX
-    MOVQ AX, 8(SP)
-    MOVQ a+8(FP), AX
-    MOVQ AX, 16(SP)
+    //MOVQ AX, (SP)
+    //MOVQ AX, 8(SP)
+    MOVQ BX, 16(SP)
     CALL ·mul(SB)
 
+    MOVQ (SP), AX
     RET
 
 // add(z, x, y *Element)
@@ -2551,13 +2555,13 @@ loop_mimc:
     SHLQ $5, DX
     ADDQ SI, DX
 
-    MOVQ R10, (SP)
+    //MOVQ R10, (SP)
     MOVQ R10, 8(SP)
     MOVQ DX, 16(SP)
     CALL ·add(SB)
 
     MOVQ R9, (SP)
-    MOVQ R10, 8(SP)
+    //MOVQ R10, 8(SP)
     MOVQ R8, 16(SP)
     MOVQ SI, 24(SP)
     CALL ·pow17(SB)
@@ -2571,9 +2575,9 @@ loop_mimc:
     JMP loop_mimc
 
 loop_mimc_end:
-    MOVQ R9, (SP)
+    //MOVQ R9, (SP)
     MOVQ R9, 8(SP)
-    MOVQ R8, 16(SP)
+    //MOVQ R8, 16(SP)
     CALL ·add(SB)
     RET
 
