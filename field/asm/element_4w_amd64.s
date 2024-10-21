@@ -2548,7 +2548,6 @@ loop_mimc:
 
     MOVQ R15, CX
     SHLQ $5, CX
-    //MOVQ (DX)(CX*1), DI
     ADDQ DX, CX
 
     MOVQ tmp+16(FP), AX
