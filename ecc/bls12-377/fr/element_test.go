@@ -2987,8 +2987,8 @@ func TestMIMC(t *testing.T) {
 
 	MIMCEncrypt(h2, m2)
 
-	fmt.Println(m1)
-	fmt.Println(m2)
+	fmt.Println("m1=", m1)
+	fmt.Println("m2=", m2)
 
 	assert.Equal(t, 0, m1.Cmp(m2))
 	//}
