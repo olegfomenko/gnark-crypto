@@ -68,8 +68,6 @@ var qElement = Element{
 	q3,
 }
 
-var mimcConstants [62]Element
-
 var _modulus big.Int // q stored as big.Int
 
 // Modulus returns q as a big.Int
@@ -87,10 +85,22 @@ const qInvNeg uint64 = 725501752471715839
 // mu = 2^288 / q needed for partial Barrett reduction
 const mu uint64 = 58893420465
 
+// Parameters of MIMC hash defined over present field
+const (
+	mimcNbRounds = 62
+	mimcSeed     = "seed"
+)
+
+// MIMC constants initiated in initMIMCConstants that is called by init function
+var mimcConstants [62]Element
+
 func init() {
 	_modulus.SetString("12ab655e9a2ca55660b44d1e5c37b00159aa76fed00000010a11800000000001", 16)
+	initMIMCConstants()
+}
 
-	bseed := ([]byte)("seed")
+func initMIMCConstants() {
+	bseed := ([]byte)(mimcSeed)
 
 	hash := sha3.NewLegacyKeccak256()
 	_, _ = hash.Write(bseed)
@@ -98,7 +108,7 @@ func init() {
 	hash.Reset()
 	_, _ = hash.Write(rnd)
 
-	for i := 0; i < 62; i++ {
+	for i := 0; i < mimcNbRounds; i++ {
 		rnd = hash.Sum(nil)
 		mimcConstants[i].SetBytes(rnd)
 		hash.Reset()
