@@ -2494,40 +2494,40 @@ TEXT ·add(SB), NOSPLIT, $8-24
     MOVQ z+0(FP), CX
 
     // z0=x0+y0
-    MOVQ    0(AX), DX
-    MOVQ    0(BX), SI
-    ADDQ    DX, SI
-    MOVQ    SI, 0(CX)
+    XORQ DX, DX
+    ADDQ    0(AX), DX
+    ADDQ    0(BX), DX
+    MOVQ    DX, 0(CX)
     // z1=x1+y1
-    MOVQ    8(AX), DX
-    MOVQ    8(BX), SI
-    ADCQ    DX, SI
-    MOVQ    SI, 8(CX)
+    XORQ DX, DX
+    ADDQ    8(AX), DX
+    ADDQ    8(BX), DX
+    MOVQ    DX, 8(CX)
     // z2=x2+y2
-    MOVQ    16(AX), DX
-    MOVQ    16(BX), SI
-    ADCQ    DX, SI
-    MOVQ    SI, 16(CX)
+    XORQ DX, DX
+    ADDQ    16(AX), DX
+    ADDQ    16(BX), DX
+    MOVQ    DX, 16(CX)
     // z3=x3+y3
-    MOVQ    24(AX), DX
-    MOVQ    24(BX), SI
-    ADCQ    SI, DX
+    XORQ DX, DX
+    ADDQ    24(AX), DX
+    ADDQ    24(BX), DX
 
     MOVQ 16(CX), BX
-    MOVQ 8(CX), SI
+    MOVQ 8(CX), AX
     MOVQ 0(CX), DI
 
-    REDUCE(DI,SI,BX,DX,R11,R12,R13,R14)
+    REDUCE(DI,AX,BX,DX,R11,R12,R13,R14)
 
     MOVQ DI, 0(CX)
-    MOVQ SI, 8(CX)
+    MOVQ AX, 8(CX)
     MOVQ BX, 16(CX)
     MOVQ DX, 24(CX)
 
     RET
 
 
-TEXT ·mimcEncrypt(SB), NOSPLIT, $24-24
+TEXT ·mimcEncrypt(SB), NOSPLIT, $32-24
     NO_LOCAL_POINTERS
 
     XORQ R15, R15
@@ -2535,6 +2535,8 @@ TEXT ·mimcEncrypt(SB), NOSPLIT, $24-24
     MOVQ h+0(FP), R8
     MOVQ m+8(FP), R9
     MOVQ tmp+16(FP), R10
+
+    LEAQ ·mimcConstants(SB), SI
 
 loop_mimc:
     CMPQ R15, $62
@@ -2545,26 +2547,25 @@ loop_mimc:
     MOVQ R9, 16(SP)
     CALL ·add(SB)
 
-    LEAQ ·mimcConstants(SB), DX
-
-    MOVQ R15, DI
-    SHLQ $5, DI
-    ADDQ DX, DI
+    MOVQ R15, DX
+    SHLQ $5, DX
+    ADDQ SI, DX
 
     MOVQ R10, (SP)
     MOVQ R10, 8(SP)
-    MOVQ DI, 16(SP)
+    MOVQ DX, 16(SP)
     CALL ·add(SB)
-
 
     MOVQ R9, (SP)
     MOVQ R10, 8(SP)
     MOVQ R8, 16(SP)
+    MOVQ SI, 24(SP)
     CALL ·pow17(SB)
 
     MOVQ (SP), R9
     MOVQ 8(SP), R10
     MOVQ 16(SP), R8
+    MOVQ 24(SP), SI
 
     INCQ    R15
     JMP loop_mimc
