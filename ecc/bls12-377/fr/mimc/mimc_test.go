@@ -83,7 +83,7 @@ func BenchmarkEncryptASM(b *testing.B) {
 }
 
 func BenchmarkEncryptSemiASM(b *testing.B) {
-	initConstants()
+	once.Do(initConstants) // init constants
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
@@ -106,7 +106,7 @@ func MIMCEncryptSemi(h, m *fr.Element) {
 }
 
 func BenchmarkEncryptNative(b *testing.B) {
-	initConstants()
+	once.Do(initConstants) // init constants
 
 	b.ResetTimer()
 
