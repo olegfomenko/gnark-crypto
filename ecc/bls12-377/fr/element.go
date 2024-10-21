@@ -20,6 +20,7 @@ import (
 	"crypto/rand"
 	"encoding/binary"
 	"errors"
+	"golang.org/x/crypto/sha3"
 	"io"
 	"math/big"
 	"math/bits"
@@ -67,6 +68,8 @@ var qElement = Element{
 	q3,
 }
 
+var mimcConstants [62]Element
+
 var _modulus big.Int // q stored as big.Int
 
 // Modulus returns q as a big.Int
@@ -86,6 +89,21 @@ const mu uint64 = 58893420465
 
 func init() {
 	_modulus.SetString("12ab655e9a2ca55660b44d1e5c37b00159aa76fed00000010a11800000000001", 16)
+
+	bseed := ([]byte)("seed")
+
+	hash := sha3.NewLegacyKeccak256()
+	_, _ = hash.Write(bseed)
+	rnd := hash.Sum(nil) // pre hash before use
+	hash.Reset()
+	_, _ = hash.Write(rnd)
+
+	for i := 0; i < 62; i++ {
+		rnd = hash.Sum(nil)
+		mimcConstants[i].SetBytes(rnd)
+		hash.Reset()
+		_, _ = hash.Write(rnd)
+	}
 }
 
 // NewElement returns a new Element from a uint64 value

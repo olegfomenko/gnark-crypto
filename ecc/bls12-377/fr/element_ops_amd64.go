@@ -20,6 +20,9 @@
 package fr
 
 //go:noescape
+func mimcEncrypt(h, m, tmp *Element)
+
+//go:noescape
 func add(z, x, y *Element)
 
 //go:noescape
@@ -216,4 +219,9 @@ func (z *Element) Square(x *Element) *Element {
 func (z *Element) Add(x, y *Element) *Element {
 	add(z, x, y)
 	return z
+}
+
+func MIMCEncrypt(h, m *Element) {
+	tmp := new(Element)
+	mimcEncrypt(h, m, tmp)
 }

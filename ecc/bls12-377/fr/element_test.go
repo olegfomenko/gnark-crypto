@@ -2960,3 +2960,36 @@ func BenchmarkAdd2(b *testing.B) {
 		res.Add(x, y)
 	}
 }
+
+//func TestMIMC(t *testing.T) {
+//
+//	fmt.Println("Running test")
+//
+//	//for i := 0; i < 100; i++ {
+//	h1, _ := new(Element).SetRandom()
+//	h2 := new(Element).Set(h1)
+//
+//	m1, _ := new(Element).SetRandom()
+//	m2 := new(Element).Set(m1)
+//
+//	var tmp Element
+//
+//	for i := 0; i < 62; i++ {
+//		// m = (m+k+c)^**17
+//		tmp.Add(m1, h1).Add(&tmp, &mimcConstants[i])
+//		m1.Square(&tmp).
+//			Square(m1).
+//			Square(m1).
+//			Square(m1).
+//			Mul(m1, &tmp)
+//	}
+//	m1.Add(m1, h1)
+//
+//	MIMCEncrypt(h2, m2)
+//
+//	fmt.Println(m1)
+//	fmt.Println(m2)
+//
+//	assert.Equal(t, 0, m1.Cmp(m2))
+//	//}
+//}

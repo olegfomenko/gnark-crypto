@@ -81,6 +81,14 @@ func (d *digest) Sum(b []byte) []byte {
 	return b
 }
 
+func (d *digest) Sum2(b []byte) []byte {
+	buffer := d.checksum2()
+	d.data = nil // flush the data already hashed
+	hash := buffer.Bytes()
+	b = append(b, hash[:]...)
+	return b
+}
+
 // BlockSize returns the hash's underlying block size.
 // The Write method must be able to accept any amount
 // of data, but it may operate more efficiently if all writes
@@ -147,6 +155,23 @@ func (d *digest) checksum() fr.Element {
 	return d.h
 }
 
+func (d *digest) checksum2() fr.Element {
+	// Write guarantees len(data) % BlockSize == 0
+
+	// TODO @ThomasPiellard shouldn't Sum() returns an error if there is no data?
+	// TODO: @Tabaie, @Thomas Piellard Now sure what to make of this
+	/*if len(d.data) == 0 {
+		d.data = make([]byte, BlockSize)
+	}*/
+
+	for i := range d.data {
+		r := d.encrypt2(d.data[i])
+		d.h.Add(&r, &d.h).Add(&d.h, &d.data[i])
+	}
+
+	return d.h
+}
+
 // plain execution of a mimc run
 // m: message
 // k: encryption key
@@ -164,6 +189,12 @@ func (d *digest) encrypt(m fr.Element) fr.Element {
 			Mul(&m, &tmp)
 	}
 	m.Add(&m, &d.h)
+	return m
+}
+
+func (d *digest) encrypt2(m fr.Element) fr.Element {
+	once.Do(initConstants) // init constants
+	fr.MIMCEncrypt(&d.h, &m)
 	return m
 }
 
