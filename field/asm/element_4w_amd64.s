@@ -4141,7 +4141,6 @@ TEXT ·mimcEncrypt(SB), NOSPLIT, $24-24
     MOVQ AX, 8(SP)
     CALL ·pow17(SB)
 
-end_mimc:
     MOVQ m+8(FP), AX
     MOVQ AX, (SP)
     MOVQ m+8(FP), AX
