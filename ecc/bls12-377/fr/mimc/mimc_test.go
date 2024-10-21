@@ -45,6 +45,7 @@ func BenchmarkMIMCNative(b *testing.B) {
 
 		b.StartTimer()
 		_ = h.Sum(msg)
+		_ = h.Sum(nil)
 	}
 }
 
@@ -61,6 +62,7 @@ func BenchmarkMIMCAsm(b *testing.B) {
 
 		b.StartTimer()
 		_ = h.(*digest).Sum2(msg)
+		_ = h.(*digest).Sum2(nil)
 	}
 }
 
@@ -93,7 +95,6 @@ func BenchmarkEncryptNative2(b *testing.B) {
 }
 
 func BenchmarkEncryptASM(b *testing.B) {
-
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
 		m, _ := new(fr.Element).SetRandom()
