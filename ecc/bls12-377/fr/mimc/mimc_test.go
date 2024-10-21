@@ -69,6 +69,14 @@ func TestHashASMMIMC(t *testing.T) {
 func BenchmarkEncryptNative(b *testing.B) {
 	initConstants()
 
+	for i := 0; i < 1000; i++ {
+		m, _ := new(fr.Element).SetRandom()
+		h, _ := new(fr.Element).SetRandom()
+		encryptTest1(h, m)
+	}
+
+	b.ResetTimer()
+
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
 		m, _ := new(fr.Element).SetRandom()
@@ -76,11 +84,23 @@ func BenchmarkEncryptNative(b *testing.B) {
 
 		b.StartTimer()
 		encryptTest1(h, m)
+		encryptTest1(h, m)
 	}
 }
 
 func BenchmarkEncryptNative2(b *testing.B) {
 	initConstants()
+
+	for i := 0; i < 1000; i++ {
+		m, _ := new(fr.Element).SetRandom()
+		h, _ := new(fr.Element).SetRandom()
+
+		msg := *m
+		hash := *h
+		encryptTest2(hash, msg)
+	}
+
+	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
@@ -91,19 +111,25 @@ func BenchmarkEncryptNative2(b *testing.B) {
 		hash := *h
 		b.StartTimer()
 		encryptTest2(hash, msg)
+		encryptTest2(hash, msg)
 	}
 }
 
 func BenchmarkEncryptASM(b *testing.B) {
-	m, _ := new(fr.Element).SetRandom()
-	h, _ := new(fr.Element).SetRandom()
-	fr.MIMCEncrypt(h, m)
+	for i := 0; i < 1000; i++ {
+		m, _ := new(fr.Element).SetRandom()
+		h, _ := new(fr.Element).SetRandom()
+		fr.MIMCEncrypt(h, m)
+	}
+
+	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
 		m, _ := new(fr.Element).SetRandom()
 		h, _ := new(fr.Element).SetRandom()
 		b.StartTimer()
+		fr.MIMCEncrypt(h, m)
 		fr.MIMCEncrypt(h, m)
 	}
 }
