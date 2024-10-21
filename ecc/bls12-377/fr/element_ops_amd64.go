@@ -222,6 +222,6 @@ func (z *Element) Add(x, y *Element) *Element {
 }
 
 func MIMCEncrypt(h, m *Element) {
-	tmp := new(Element)
-	mimcEncrypt(h, m, tmp)
+	var tmp Element
+	mimcEncrypt(h, m, &tmp)
 }
