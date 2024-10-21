@@ -32,39 +32,39 @@ func TestHashASMMIMC(t *testing.T) {
 
 }
 
-func BenchmarkMIMCNative(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		b.StopTimer()
-		msg := make([]byte, 128)
-		_, err := mrand.Read(msg)
-		if err != nil {
-			panic(err)
-		}
-
-		h := NewMiMC()
-
-		b.StartTimer()
-		_ = h.Sum(msg)
-		_ = h.Sum(nil)
-	}
-}
-
-func BenchmarkMIMCAsm(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		b.StopTimer()
-		msg := make([]byte, 128)
-		_, err := mrand.Read(msg)
-		if err != nil {
-			panic(err)
-		}
-
-		h := NewMiMC()
-
-		b.StartTimer()
-		_ = h.(*digest).Sum2(msg)
-		_ = h.(*digest).Sum2(nil)
-	}
-}
+//func BenchmarkMIMCNative(b *testing.B) {
+//	for i := 0; i < b.N; i++ {
+//		b.StopTimer()
+//		msg := make([]byte, 128)
+//		_, err := mrand.Read(msg)
+//		if err != nil {
+//			panic(err)
+//		}
+//
+//		h := NewMiMC()
+//
+//		b.StartTimer()
+//		_ = h.Sum(msg)
+//		_ = h.Sum(nil)
+//	}
+//}
+//
+//func BenchmarkMIMCAsm(b *testing.B) {
+//	for i := 0; i < b.N; i++ {
+//		b.StopTimer()
+//		msg := make([]byte, 128)
+//		_, err := mrand.Read(msg)
+//		if err != nil {
+//			panic(err)
+//		}
+//
+//		h := NewMiMC()
+//
+//		b.StartTimer()
+//		_ = h.(*digest).Sum2(msg)
+//		_ = h.(*digest).Sum2(nil)
+//	}
+//}
 
 func BenchmarkEncryptNative(b *testing.B) {
 	initConstants()
@@ -95,6 +95,10 @@ func BenchmarkEncryptNative2(b *testing.B) {
 }
 
 func BenchmarkEncryptASM(b *testing.B) {
+	m, _ := new(fr.Element).SetRandom()
+	h, _ := new(fr.Element).SetRandom()
+	fr.MIMCEncrypt(h, m)
+
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
 		m, _ := new(fr.Element).SetRandom()
