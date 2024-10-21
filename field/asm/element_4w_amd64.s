@@ -2581,3 +2581,25 @@ loop_mimc_end:
     CALL ·add(SB)
     RET
 
+
+TEXT ·mimcStep(SB), NOSPLIT, $24-32
+    NO_LOCAL_POINTERS
+
+    MOVQ h+0(FP), R8
+    MOVQ m+8(FP), R9
+    MOVQ c+16(FP), R10
+    MOVQ tmp+24(FP), SI
+
+    MOVQ SI, (SP)
+    MOVQ R8, 8(SP)
+    MOVQ R9, 16(SP)
+    CALL ·add(SB)
+
+    MOVQ SI, 8(SP)
+    MOVQ R10, 16(SP)
+    CALL ·add(SB)
+
+    MOVQ R9, (SP)
+    CALL ·pow17(SB)
+
+    RET

@@ -20,6 +20,9 @@
 package fr
 
 //go:noescape
+func mimcStep(h, m, c, tmp *Element)
+
+//go:noescape
 func mimcEncrypt(h, m, tmp *Element)
 
 //go:noescape
@@ -224,4 +227,9 @@ func (z *Element) Add(x, y *Element) *Element {
 func MIMCEncrypt(h, m *Element) {
 	var tmp Element
 	mimcEncrypt(h, m, &tmp)
+}
+
+func MIMCStep(h, m, c *Element) {
+	var tmp Element
+	mimcStep(h, m, c, &tmp)
 }

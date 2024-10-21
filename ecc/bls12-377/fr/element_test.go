@@ -3011,3 +3011,68 @@ func TestMIMC(t *testing.T) {
 	assert.Equal(t, 0, m1.Cmp(m2))
 	//}
 }
+
+func TestStepMIMC(t *testing.T) {
+
+	fmt.Println("Running test")
+
+	//for i := 0; i < 100; i++ {
+	h1, _ := new(Element).SetRandom()
+	h2 := new(Element).Set(h1)
+
+	m1, _ := new(Element).SetRandom()
+	m2 := new(Element).Set(m1)
+
+	c1, _ := new(Element).SetRandom()
+	c2 := new(Element).Set(c1)
+
+	var tmp Element
+
+	tmp.Add(m1, h1).Add(&tmp, c1)
+	m1.Square(&tmp).
+		Square(m1).
+		Square(m1).
+		Square(m1).
+		Mul(m1, &tmp)
+
+	MIMCStep(h2, m2, c2)
+
+	fmt.Println("m1=", m1)
+	fmt.Println("m2=", m2)
+
+	assert.Equal(t, 0, m1.Cmp(m2))
+	//}
+}
+
+func BenchmarkStepASM(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		h1, _ := new(Element).SetRandom()
+		m1, _ := new(Element).SetRandom()
+		c1, _ := new(Element).SetRandom()
+		b.StartTimer()
+		MIMCStep(h1, m1, c1)
+	}
+}
+
+func BenchmarkStepNative(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		h1, _ := new(Element).SetRandom()
+		m1, _ := new(Element).SetRandom()
+		c1, _ := new(Element).SetRandom()
+		b.StartTimer()
+		MIMCStepNative(h1, m1, c1)
+	}
+}
+
+func MIMCStepNative(h1, m1, c1 *Element) {
+	var tmp Element
+
+	tmp.Add(m1, h1).Add(&tmp, c1)
+	m1.Square(&tmp).
+		Square(m1).
+		Square(m1).
+		Square(m1).
+		Mul(m1, &tmp)
+}
