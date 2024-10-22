@@ -223,13 +223,3 @@ func (z *Element) Add(x, y *Element) *Element {
 	add(z, x, y)
 	return z
 }
-
-func MIMCEncrypt(h, m *Element) {
-	var tmp Element
-	mimcEncrypt(h, m, &tmp)
-}
-
-func MIMCStep(h, m, c *Element) {
-	var tmp Element
-	mimcStep(h, m, c, &tmp)
-}

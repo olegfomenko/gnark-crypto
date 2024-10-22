@@ -458,3 +458,25 @@ func (z *Element) Square(x *Element) *Element {
 	}
 	return z
 }
+
+func mimcEncrypt(h, m, tmp *Element) {
+	for i := 0; i < 62; i++ {
+		// m = (m+k+c)^**17
+		tmp.Add(m, h).Add(tmp, &MIMCConstants[i])
+		m.Square(tmp).
+			Square(m).
+			Square(m).
+			Square(m).
+			Mul(m, tmp)
+	}
+	m.Add(m, h)
+}
+
+func mimcStep(h, m, c, tmp *Element) {
+	tmp.Add(m, h).Add(tmp, c)
+	m.Square(tmp).
+		Square(m).
+		Square(m).
+		Square(m).
+		Mul(m, tmp)
+}

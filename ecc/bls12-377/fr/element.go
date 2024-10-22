@@ -92,7 +92,7 @@ const (
 )
 
 // MIMC constants initiated in initMIMCConstants that is called by init function
-var mimcConstants [62]Element
+var MIMCConstants [62]Element
 
 func init() {
 	_modulus.SetString("12ab655e9a2ca55660b44d1e5c37b00159aa76fed00000010a11800000000001", 16)
@@ -110,7 +110,7 @@ func initMIMCConstants() {
 
 	for i := 0; i < mimcNbRounds; i++ {
 		rnd = hash.Sum(nil)
-		mimcConstants[i].SetBytes(rnd)
+		MIMCConstants[i].SetBytes(rnd)
 		hash.Reset()
 		_, _ = hash.Write(rnd)
 	}
@@ -1604,4 +1604,14 @@ func (z *Element) linearCombNonModular(x *Element, xC int64, y *Element, yC int6
 	yHi, _ = bits.Add64(xHi, yHi, carry)
 
 	return yHi
+}
+
+func MIMCEncrypt(h, m *Element) {
+	var tmp Element
+	mimcEncrypt(h, m, &tmp)
+}
+
+func MIMCStep(h, m, c *Element) {
+	var tmp Element
+	mimcStep(h, m, c, &tmp)
 }

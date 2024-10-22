@@ -2540,7 +2540,7 @@ TEXT ·mimcEncrypt(SB), NOSPLIT, $32-24
     MOVQ m+8(FP), R9
     MOVQ tmp+16(FP), R10
 
-    LEAQ ·mimcConstants(SB), SI
+    LEAQ ·MIMCConstants(SB), SI
 
 loop_mimc:
     CMPQ R15, $62

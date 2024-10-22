@@ -2995,7 +2995,7 @@ func TestMIMC(t *testing.T) {
 
 		for i := 0; i < 62; i++ {
 			// m = (m+k+c)^**17
-			tmp.Add(m1, h1).Add(&tmp, &mimcConstants[i])
+			tmp.Add(m1, h1).Add(&tmp, &MIMCConstants[i])
 			m1.Square(&tmp).
 				Square(m1).
 				Square(m1).
