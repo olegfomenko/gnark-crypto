@@ -6,12 +6,6 @@ import (
 )
 
 func BenchmarkEncryptASM(b *testing.B) {
-	m, _ := new(fr.Element).SetRandom()
-	h, _ := new(fr.Element).SetRandom()
-	fr.MIMCEncrypt(h, m)
-
-	b.ResetTimer()
-
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
 		m, _ := new(fr.Element).SetRandom()
@@ -22,8 +16,6 @@ func BenchmarkEncryptASM(b *testing.B) {
 }
 
 func BenchmarkEncryptSemiASM(b *testing.B) {
-	b.ResetTimer()
-
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
 		m, _ := new(fr.Element).SetRandom()
@@ -34,7 +26,6 @@ func BenchmarkEncryptSemiASM(b *testing.B) {
 }
 
 func MIMCEncryptSemi(h, m *fr.Element) {
-
 	for i := 0; i < mimcNbRounds; i++ {
 		fr.MIMCStep(h, m, &fr.MIMCConstants[i])
 	}
@@ -43,8 +34,6 @@ func MIMCEncryptSemi(h, m *fr.Element) {
 }
 
 func BenchmarkEncryptNative(b *testing.B) {
-	b.ResetTimer()
-
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
 
