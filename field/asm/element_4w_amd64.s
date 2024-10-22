@@ -2543,7 +2543,7 @@ TEXT ·mimcEncrypt(SB), NOSPLIT, $32-24
     LEAQ ·mimcConstants(SB), SI
 
 loop_mimc:
-    CMPQ R15, $62
+    CMPQ R15, $1984
     JEQ loop_mimc_end
 
     MOVQ R10, (SP)
@@ -2551,9 +2551,11 @@ loop_mimc:
     MOVQ R9, 16(SP)
     CALL ·add(SB)
 
-    MOVQ R15, DX
-    SHLQ $5, DX
-    ADDQ SI, DX
+    //MOVQ R15, DX
+    //SHLQ $5, DX
+    //ADDQ SI, DX
+
+    LEAQ (SI)(R15*1), DX
 
     //MOVQ R10, (SP)
     MOVQ R10, 8(SP)
@@ -2571,7 +2573,7 @@ loop_mimc:
     MOVQ 16(SP), R8
     MOVQ 24(SP), SI
 
-    INCQ    R15
+    ADDQ $32, R15
     JMP loop_mimc
 
 loop_mimc_end:
