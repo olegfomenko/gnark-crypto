@@ -2551,11 +2551,11 @@ loop_mimc:
     MOVQ R9, 16(SP)
     CALL ·add(SB)
 
-    //MOVQ R15, DX
+    MOVQ R15, DX
     //SHLQ $5, DX
-    //ADDQ SI, DX
+    ADDQ SI, DX
 
-    LEAQ (SI)(R15*1), DX
+    //LEAQ (SI)(R15*1), DX
 
     //MOVQ R10, (SP)
     MOVQ R10, 8(SP)
