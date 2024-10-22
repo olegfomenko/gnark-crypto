@@ -2492,7 +2492,7 @@ TEXT ·pow17(SB), NOSPLIT, $32-16
     RET
 
 // add(z, x, y *Element)
-TEXT ·add(SB), NOSPLIT, $8-24
+TEXT ·add(SB), NOSPLIT, $0-24
     MOVQ x+8(FP), AX
     MOVQ y+16(FP), BX
     MOVQ z+0(FP), CX
