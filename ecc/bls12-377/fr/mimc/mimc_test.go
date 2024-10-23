@@ -1,7 +1,10 @@
 package mimc
 
 import (
+	"encoding/hex"
+	"fmt"
 	"github.com/consensys/gnark-crypto/ecc/bls12-377/fr"
+	mrand "math/rand"
 	"testing"
 )
 
@@ -47,4 +50,26 @@ func BenchmarkEncryptNative(b *testing.B) {
 		b.StartTimer()
 		d.encrypt(msg)
 	}
+}
+
+func TestHashMIMC(t *testing.T) {
+	fmt.Println("Running test")
+
+	for i := 0; i < 1000; i++ {
+		msg := make([]byte, 128)
+		_, err := mrand.Read(msg)
+		if err != nil {
+			panic(err)
+		}
+
+		h := NewMiMC()
+		_, err = h.Write(msg)
+		if err != nil {
+			panic(err)
+		}
+
+		res := h.Sum(nil)
+		fmt.Println(hex.EncodeToString(res))
+	}
+
 }
