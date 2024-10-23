@@ -148,9 +148,9 @@ func (d *digest) checksum() fr.Element {
 // m: message
 // k: encryption key
 func (d *digest) encrypt(m fr.Element) fr.Element {
-	//fr.MIMCEncrypt(&d.h, &m)
+	fr.MIMCEncrypt(&d.h, &m)
 
-	var tmp fr.Element
+	/*var tmp fr.Element
 	for i := 0; i < mimcNbRounds; i++ {
 		// m = (m+k+c)^**17
 		tmp.Add(&m, &d.h).Add(&tmp, &fr.MIMCConstants[i])
@@ -160,7 +160,7 @@ func (d *digest) encrypt(m fr.Element) fr.Element {
 			Square(&m).
 			Mul(&m, &tmp)
 	}
-	m.Add(&m, &d.h)
+	m.Add(&m, &d.h)*/
 
 	return m
 }
