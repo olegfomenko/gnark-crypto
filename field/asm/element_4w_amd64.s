@@ -2531,7 +2531,7 @@ TEXT ·add(SB), NOSPLIT, $0-24
     RET
 
 
-TEXT ·mimcEncrypt(SB), NOSPLIT, $32-24
+TEXT ·mimcEncrypt(SB), NOSPLIT, $56-24
     //NO_LOCAL_POINTERS
 
     XORQ R15, R15
@@ -2549,7 +2549,16 @@ loop_mimc:
     MOVQ R10, (SP)
     MOVQ R8, 8(SP)
     MOVQ R9, 16(SP)
+    MOVQ SI, 24(SP)
+    //MOVQ R15, 32(SP)
+
     CALL ·add(SB)
+
+    MOVQ (SP), R10
+    MOVQ 8(SP), R8
+    MOVQ 16(SP), R9
+    MOVQ 24(SP), SI
+    //MOVQ 32(SP), R15
 
     MOVQ R15, DX
     SHLQ $5, DX
@@ -2557,30 +2566,48 @@ loop_mimc:
 
     //LEAQ (SI)(R15*1), DX
 
-    //MOVQ R10, (SP)
+    MOVQ R10, (SP)
     MOVQ R10, 8(SP)
     MOVQ DX, 16(SP)
+
+    MOVQ R8, 24(SP)
+    MOVQ R9, 32(SP)
+    MOVQ SI, 40(SP)
+    MOVQ R15, 48(SP)
+
     CALL ·add(SB)
 
+    MOVQ (SP), R10
+    MOVQ 24(SP), R8
+    MOVQ 32(SP), R9
+    MOVQ 40(SP), SI
+    MOVQ 48(SP), R15
+
     MOVQ R9, (SP)
-    //MOVQ R10, 8(SP)
+    MOVQ R10, 8(SP)
     MOVQ R8, 16(SP)
     MOVQ SI, 24(SP)
+    MOVQ R15, 32(SP)
     CALL ·pow17(SB)
 
     MOVQ (SP), R9
     MOVQ 8(SP), R10
     MOVQ 16(SP), R8
     MOVQ 24(SP), SI
+    MOVQ 32(SP), R15
 
     INCQ R15
     JMP loop_mimc
 
 loop_mimc_end:
-    //MOVQ R9, (SP)
+    MOVQ R9, (SP)
     MOVQ R9, 8(SP)
-    //MOVQ R8, 16(SP)
+    MOVQ R8, 16(SP)
     CALL ·add(SB)
+
+    MOVQ (SP), R9
+    MOVQ 16(SP), R8
+
     RET
 
 

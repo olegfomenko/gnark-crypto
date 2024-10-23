@@ -2984,32 +2984,63 @@ func TestMIMC(t *testing.T) {
 	fmt.Println("Running test")
 
 	for i := 0; i < 10000; i++ {
-		fmt.Println("Run", i)
-		h1, _ := new(Element).SetRandom()
-		h2 := new(Element).Set(h1)
+		t.Run(fmt.Sprintf("Random test %d", i), func(t *testing.T) {
+			h1, _ := new(Element).SetRandom()
+			h2 := new(Element).Set(h1)
 
-		m1, _ := new(Element).SetRandom()
-		m2 := new(Element).Set(m1)
+			m1, _ := new(Element).SetRandom()
+			m2 := new(Element).Set(m1)
 
-		var tmp Element
+			var tmp Element
 
-		for i := 0; i < 62; i++ {
-			// m = (m+k+c)^**17
-			tmp.Add(m1, h1).Add(&tmp, &MIMCConstants[i])
-			m1.Square(&tmp).
-				Square(m1).
-				Square(m1).
-				Square(m1).
-				Mul(m1, &tmp)
-		}
-		m1.Add(m1, h1)
+			for i := 0; i < 62; i++ {
+				// m = (m+k+c)^**17
+				tmp.Add(m1, h1).Add(&tmp, &MIMCConstants[i])
+				m1.Square(&tmp).
+					Square(m1).
+					Square(m1).
+					Square(m1).
+					Mul(m1, &tmp)
+			}
+			m1.Add(m1, h1)
 
-		MIMCEncrypt(h2, m2)
+			MIMCEncrypt(h2, m2)
 
-		fmt.Println("m1=", m1)
-		fmt.Println("m2=", m2)
+			fmt.Println("m1=", m1)
+			fmt.Println("m2=", m2)
 
-		assert.Equal(t, 0, m1.Cmp(m2))
+			assert.Equal(t, 0, m1.Cmp(m2), fmt.Sprintf("Failed random %d, %s %s", i, m1.String(), m2.String()))
+		})
+	}
+
+	for i := 0; i < 10000; i++ {
+		t.Run(fmt.Sprintf("Ordered test %d", i), func(t *testing.T) {
+			h1, _ := new(Element).SetRandom()
+			h2 := new(Element).Set(h1)
+
+			m1 := new(Element).SetInt64(int64(i))
+			m2 := new(Element).Set(m1)
+
+			var tmp Element
+
+			for i := 0; i < 62; i++ {
+				// m = (m+k+c)^**17
+				tmp.Add(m1, h1).Add(&tmp, &MIMCConstants[i])
+				m1.Square(&tmp).
+					Square(m1).
+					Square(m1).
+					Square(m1).
+					Mul(m1, &tmp)
+			}
+			m1.Add(m1, h1)
+
+			MIMCEncrypt(h2, m2)
+
+			fmt.Println("m1=", m1)
+			fmt.Println("m2=", m2)
+
+			assert.Equal(t, 0, m1.Cmp(m2), fmt.Sprintf("Failed ordered %d, %s %s", i, m1.String(), m2.String()))
+		})
 	}
 }
 
