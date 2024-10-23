@@ -2491,45 +2491,40 @@ TEXT ·pow17(SB), NOSPLIT, $32-16
     MOVQ (SP), AX
     RET
 
-// add(z, x, y *Element)
-TEXT ·add(SB), NOSPLIT, $0-24
+
+TEXT ·add(SB), NOSPLIT, $8-24
     MOVQ x+8(FP), AX
     MOVQ y+16(FP), BX
     MOVQ z+0(FP), CX
 
     // z0=x0+y0
-    XORQ DX, DX
-    ADDQ    0(AX), DX
-    ADDQ    0(BX), DX
-    MOVQ    DX, 0(CX)
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), R8
+    ADDQ    DX, R8
+
     // z1=x1+y1
-    XORQ DX, DX
-    ADDQ    8(AX), DX
-    ADDQ    8(BX), DX
-    MOVQ    DX, 8(CX)
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), R9
+    ADCQ    DX, R9
+
     // z2=x2+y2
-    XORQ DX, DX
-    ADDQ    16(AX), DX
-    ADDQ    16(BX), DX
-    MOVQ    DX, 16(CX)
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), R10
+    ADCQ    DX, R10
+
     // z3=x3+y3
-    XORQ DX, DX
-    ADDQ    24(AX), DX
-    ADDQ    24(BX), DX
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), DI
+    ADCQ    DI, DX
 
-    MOVQ 16(CX), BX
-    MOVQ 8(CX), AX
-    MOVQ 0(CX), DI
+    REDUCE(R8,R9,R10,DX,R11,R12,R13,R14)
 
-    REDUCE(DI,AX,BX,DX,R11,R12,R13,R14)
-
-    MOVQ DI, 0(CX)
-    MOVQ AX, 8(CX)
-    MOVQ BX, 16(CX)
+    MOVQ R8, 0(CX)
+    MOVQ R9, 8(CX)
+    MOVQ R10, 16(CX)
     MOVQ DX, 24(CX)
 
     RET
-
 
 TEXT ·mimcEncrypt(SB), NOSPLIT, $56-24
     //NO_LOCAL_POINTERS

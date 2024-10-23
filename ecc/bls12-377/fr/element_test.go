@@ -2961,6 +2961,25 @@ func BenchmarkAddNative(b *testing.B) {
 	}
 }
 
+func TestAddCompared(t *testing.T) {
+	for i := 0; i < 1000; i++ {
+		h1, _ := new(Element).SetRandom()
+		h2 := new(Element).Set(h1)
+
+		m1, _ := new(Element).SetRandom()
+		m2 := new(Element).Set(m1)
+
+		res1 := new(Element).Add(h1, m1)
+		res2 := new(Element).AddNative(h2, m2)
+
+		fmt.Println("res1=", res1)
+		fmt.Println("res2=", res2)
+
+		assert.Equal(t, 0, res1.Cmp(res2), fmt.Sprintf("Add check failed %d, %s %s", i, res1.String(), res2.String()))
+
+	}
+}
+
 func (z *Element) AddNative(x, y *Element) *Element {
 	var carry uint64
 	z[0], carry = bits.Add64(x[0], y[0], 0)
