@@ -485,3 +485,37 @@ noAdx_2:
 	MOVQ AX, (SP)
 	CALL ·_fromMontGeneric(SB)
 	RET
+
+TEXT ·add(SB), NOSPLIT, $8-24
+    MOVQ x+8(FP), AX
+    MOVQ y+16(FP), BX
+    MOVQ z+0(FP), CX
+
+    // z0=x0+y0
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), R8
+    ADDQ    DX, R8
+
+    // z1=x1+y1
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), R9
+    ADCQ    DX, R9
+
+    // z2=x2+y2
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), R10
+    ADCQ    DX, R10
+
+    // z3=x3+y3
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), DI
+    ADCQ    DI, DX
+
+    REDUCE(R8,R9,R10,DX,R11,R12,R13,R14)
+
+    MOVQ R8, 0(CX)
+    MOVQ R9, 8(CX)
+    MOVQ R10, 16(CX)
+    MOVQ DX, 24(CX)
+
+    RET
