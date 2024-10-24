@@ -517,5 +517,4 @@ TEXT ·add(SB), NOSPLIT, $8-24
     MOVQ R9, 8(CX)
     MOVQ R10, 16(CX)
     MOVQ DX, 24(CX)
-
     RET
