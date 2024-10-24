@@ -206,7 +206,6 @@ TEXT ·Butterfly(SB), NOSPLIT, $0-16
 
 // mul(res, x, y *Element)
 TEXT ·mul(SB), $24-24
-
 	// Algorithm 2 of "Faster Montgomery Multiplication and Multi-Scalar-Multiplication for SNARKS"
 	// by Y. El Housni and G. Botrel https://doi.org/10.46586/tches.v2023.i3.504-521
 	// See github.com/gnark-crypto/field/generator for more comments.
@@ -2436,3 +2435,195 @@ loop_18:
 
 done_17:
 	RET
+
+// pow17(res, a *Element)
+TEXT ·pow17(SB), NOSPLIT, $32-16
+    NO_LOCAL_POINTERS
+
+    MOVQ res+0(FP), AX
+    MOVQ a+8(FP), BX
+
+    // a^2
+    MOVQ AX, (SP)
+    MOVQ BX, 8(SP)
+    MOVQ BX, 16(SP)
+    CALL ·mul(SB)
+
+    MOVQ (SP), AX
+    MOVQ 8(SP), BX
+
+    // a^4
+    //MOVQ AX, (SP)
+    MOVQ AX, 8(SP)
+    MOVQ AX, 16(SP)
+    MOVQ BX, 24(SP) // only to save
+    CALL ·mul(SB)
+
+    //MOVQ (SP), AX
+    //MOVQ 24(SP), BX
+
+    // a^8
+    //MOVQ AX, (SP)
+    //MOVQ AX, 8(SP)
+    //MOVQ AX, 16(SP)
+    //MOVQ BX, 24(SP) // only to save
+    CALL ·mul(SB)
+
+    //MOVQ (SP), AX
+    //MOVQ 24(SP), BX
+
+    // a^16
+    //MOVQ AX, (SP)
+    //MOVQ AX, 8(SP)
+    //MOVQ AX, 16(SP)
+    //MOVQ BX, 24(SP) // only to save
+    CALL ·mul(SB)
+
+    MOVQ (SP), AX
+    MOVQ 24(SP), BX
+
+    // a^17
+    //MOVQ AX, (SP)
+    //MOVQ AX, 8(SP)
+    MOVQ BX, 16(SP)
+    CALL ·mul(SB)
+
+    MOVQ (SP), AX
+    RET
+
+
+TEXT ·add(SB), NOSPLIT, $8-24
+    MOVQ x+8(FP), AX
+    MOVQ y+16(FP), BX
+    MOVQ z+0(FP), CX
+
+    // z0=x0+y0
+    MOVQ    0(AX), DX
+    MOVQ    0(BX), R8
+    ADDQ    DX, R8
+
+    // z1=x1+y1
+    MOVQ    8(AX), DX
+    MOVQ    8(BX), R9
+    ADCQ    DX, R9
+
+    // z2=x2+y2
+    MOVQ    16(AX), DX
+    MOVQ    16(BX), R10
+    ADCQ    DX, R10
+
+    // z3=x3+y3
+    MOVQ    24(AX), DX
+    MOVQ    24(BX), DI
+    ADCQ    DI, DX
+
+    REDUCE(R8,R9,R10,DX,R11,R12,R13,R14)
+
+    MOVQ R8, 0(CX)
+    MOVQ R9, 8(CX)
+    MOVQ R10, 16(CX)
+    MOVQ DX, 24(CX)
+
+    RET
+
+TEXT ·mimcEncrypt(SB), NOSPLIT, $56-24
+    //NO_LOCAL_POINTERS
+
+    XORQ R15, R15
+
+    MOVQ h+0(FP), R8
+    MOVQ m+8(FP), R9
+    MOVQ tmp+16(FP), R10
+
+    LEAQ ·MIMCConstants(SB), SI
+
+loop_mimc:
+    CMPQ R15, $62
+    JEQ loop_mimc_end
+
+    MOVQ R10, (SP)
+    MOVQ R8, 8(SP)
+    MOVQ R9, 16(SP)
+    MOVQ SI, 24(SP)
+    //MOVQ R15, 32(SP)
+
+    CALL ·add(SB)
+
+    MOVQ (SP), R10
+    MOVQ 8(SP), R8
+    MOVQ 16(SP), R9
+    MOVQ 24(SP), SI
+    //MOVQ 32(SP), R15
+
+    MOVQ R15, DX
+    SHLQ $5, DX
+    ADDQ SI, DX
+
+    //LEAQ (SI)(R15*1), DX
+
+    MOVQ R10, (SP)
+    MOVQ R10, 8(SP)
+    MOVQ DX, 16(SP)
+
+    MOVQ R8, 24(SP)
+    MOVQ R9, 32(SP)
+    MOVQ SI, 40(SP)
+    MOVQ R15, 48(SP)
+
+    CALL ·add(SB)
+
+    MOVQ (SP), R10
+    MOVQ 24(SP), R8
+    MOVQ 32(SP), R9
+    MOVQ 40(SP), SI
+    MOVQ 48(SP), R15
+
+    MOVQ R9, (SP)
+    MOVQ R10, 8(SP)
+    MOVQ R8, 16(SP)
+    MOVQ SI, 24(SP)
+    MOVQ R15, 32(SP)
+    CALL ·pow17(SB)
+
+    MOVQ (SP), R9
+    MOVQ 8(SP), R10
+    MOVQ 16(SP), R8
+    MOVQ 24(SP), SI
+    MOVQ 32(SP), R15
+
+    INCQ R15
+    JMP loop_mimc
+
+loop_mimc_end:
+    MOVQ R9, (SP)
+    MOVQ R9, 8(SP)
+    MOVQ R8, 16(SP)
+    CALL ·add(SB)
+
+    MOVQ (SP), R9
+    MOVQ 16(SP), R8
+
+    RET
+
+
+TEXT ·mimcStep(SB), NOSPLIT, $24-32
+    NO_LOCAL_POINTERS
+
+    MOVQ h+0(FP), R8
+    MOVQ m+8(FP), R9
+    MOVQ c+16(FP), R10
+    MOVQ tmp+24(FP), SI
+
+    MOVQ SI, (SP)
+    MOVQ R8, 8(SP)
+    MOVQ R9, 16(SP)
+    CALL ·add(SB)
+
+    MOVQ SI, 8(SP)
+    MOVQ R10, 16(SP)
+    CALL ·add(SB)
+
+    MOVQ R9, (SP)
+    CALL ·pow17(SB)
+
+    RET

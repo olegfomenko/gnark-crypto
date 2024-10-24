@@ -21,7 +21,6 @@ import (
 	"hash"
 
 	"github.com/consensys/gnark-crypto/ecc/bls12-377/fr"
-	"golang.org/x/crypto/sha3"
 	"math/big"
 	"sync"
 )
@@ -34,8 +33,7 @@ const (
 
 // Params constants for the mimc hash function
 var (
-	mimcConstants [mimcNbRounds]fr.Element
-	once          sync.Once
+	once sync.Once
 )
 
 // digest represents the partial evaluation of the checksum
@@ -48,10 +46,9 @@ type digest struct {
 
 // GetConstants exposed to be used in gnark
 func GetConstants() []big.Int {
-	once.Do(initConstants) // init constants
 	res := make([]big.Int, mimcNbRounds)
 	for i := 0; i < mimcNbRounds; i++ {
-		mimcConstants[i].BigInt(&res[i])
+		fr.MIMCConstants[i].BigInt(&res[i])
 	}
 	return res
 }
@@ -151,19 +148,20 @@ func (d *digest) checksum() fr.Element {
 // m: message
 // k: encryption key
 func (d *digest) encrypt(m fr.Element) fr.Element {
-	once.Do(initConstants) // init constants
+	fr.MIMCEncrypt(&d.h, &m)
 
-	var tmp fr.Element
+	/*var tmp fr.Element
 	for i := 0; i < mimcNbRounds; i++ {
 		// m = (m+k+c)^**17
-		tmp.Add(&m, &d.h).Add(&tmp, &mimcConstants[i])
+		tmp.Add(&m, &d.h).Add(&tmp, &fr.MIMCConstants[i])
 		m.Square(&tmp).
 			Square(&m).
 			Square(&m).
 			Square(&m).
 			Mul(&m, &tmp)
 	}
-	m.Add(&m, &d.h)
+	m.Add(&m, &d.h)*/
+
 	return m
 }
 
@@ -176,23 +174,6 @@ func Sum(msg []byte) ([]byte, error) {
 	h := d.checksum()
 	bytes := h.Bytes()
 	return bytes[:], nil
-}
-
-func initConstants() {
-	bseed := ([]byte)(seed)
-
-	hash := sha3.NewLegacyKeccak256()
-	_, _ = hash.Write(bseed)
-	rnd := hash.Sum(nil) // pre hash before use
-	hash.Reset()
-	_, _ = hash.Write(rnd)
-
-	for i := 0; i < mimcNbRounds; i++ {
-		rnd = hash.Sum(nil)
-		mimcConstants[i].SetBytes(rnd)
-		hash.Reset()
-		_, _ = hash.Write(rnd)
-	}
 }
 
 // WriteString writes a string that doesn't necessarily consist of field elements

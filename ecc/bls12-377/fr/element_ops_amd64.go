@@ -20,6 +20,18 @@
 package fr
 
 //go:noescape
+func mimcStep(h, m, c, tmp *Element)
+
+//go:noescape
+func mimcEncrypt(h, m, tmp *Element)
+
+//go:noescape
+func add(z, x, y *Element)
+
+//go:noescape
+func pow17(res, a *Element)
+
+//go:noescape
 func MulBy3(x *Element)
 
 //go:noescape
@@ -204,5 +216,10 @@ func (z *Element) Mul(x, y *Element) *Element {
 func (z *Element) Square(x *Element) *Element {
 	// see Mul for doc.
 	mul(z, x, x)
+	return z
+}
+
+func (z *Element) Add(x, y *Element) *Element {
+	add(z, x, y)
 	return z
 }

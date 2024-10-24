@@ -20,6 +20,7 @@ import (
 	"crypto/rand"
 	"encoding/binary"
 	"errors"
+	"golang.org/x/crypto/sha3"
 	"io"
 	"math/big"
 	"math/bits"
@@ -84,8 +85,35 @@ const qInvNeg uint64 = 725501752471715839
 // mu = 2^288 / q needed for partial Barrett reduction
 const mu uint64 = 58893420465
 
+// Parameters of MIMC hash defined over present field
+const (
+	mimcNbRounds = 62
+	mimcSeed     = "seed"
+)
+
+// MIMC constants initiated in initMIMCConstants that is called by init function
+var MIMCConstants [62]Element
+
 func init() {
 	_modulus.SetString("12ab655e9a2ca55660b44d1e5c37b00159aa76fed00000010a11800000000001", 16)
+	initMIMCConstants()
+}
+
+func initMIMCConstants() {
+	bseed := ([]byte)(mimcSeed)
+
+	hash := sha3.NewLegacyKeccak256()
+	_, _ = hash.Write(bseed)
+	rnd := hash.Sum(nil) // pre hash before use
+	hash.Reset()
+	_, _ = hash.Write(rnd)
+
+	for i := 0; i < mimcNbRounds; i++ {
+		rnd = hash.Sum(nil)
+		MIMCConstants[i].SetBytes(rnd)
+		hash.Reset()
+		_, _ = hash.Write(rnd)
+	}
 }
 
 // NewElement returns a new Element from a uint64 value
@@ -390,26 +418,6 @@ func (z *Element) Halve() {
 // sets and returns z = z * 1
 func (z *Element) fromMont() *Element {
 	fromMont(z)
-	return z
-}
-
-// Add z = x + y (mod q)
-func (z *Element) Add(x, y *Element) *Element {
-
-	var carry uint64
-	z[0], carry = bits.Add64(x[0], y[0], 0)
-	z[1], carry = bits.Add64(x[1], y[1], carry)
-	z[2], carry = bits.Add64(x[2], y[2], carry)
-	z[3], _ = bits.Add64(x[3], y[3], carry)
-
-	// if z ⩾ q → z -= q
-	if !z.smallerThanModulus() {
-		var b uint64
-		z[0], b = bits.Sub64(z[0], q0, 0)
-		z[1], b = bits.Sub64(z[1], q1, b)
-		z[2], b = bits.Sub64(z[2], q2, b)
-		z[3], _ = bits.Sub64(z[3], q3, b)
-	}
 	return z
 }
 
@@ -1596,4 +1604,14 @@ func (z *Element) linearCombNonModular(x *Element, xC int64, y *Element, yC int6
 	yHi, _ = bits.Add64(xHi, yHi, carry)
 
 	return yHi
+}
+
+func MIMCEncrypt(h, m *Element) {
+	var tmp Element
+	mimcEncrypt(h, m, &tmp)
+}
+
+func MIMCStep(h, m, c *Element) {
+	var tmp Element
+	mimcStep(h, m, c, &tmp)
 }

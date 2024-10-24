@@ -60,6 +60,26 @@ func reduce(z *Element) {
 	_reduceGeneric(z)
 }
 
+// Add z = x + y (mod q)
+func (z *Element) Add(x, y *Element) *Element {
+
+	var carry uint64
+	z[0], carry = bits.Add64(x[0], y[0], 0)
+	z[1], carry = bits.Add64(x[1], y[1], carry)
+	z[2], carry = bits.Add64(x[2], y[2], carry)
+	z[3], _ = bits.Add64(x[3], y[3], carry)
+
+	// if z ⩾ q → z -= q
+	if !z.smallerThanModulus() {
+		var b uint64
+		z[0], b = bits.Sub64(z[0], q0, 0)
+		z[1], b = bits.Sub64(z[1], q1, b)
+		z[2], b = bits.Sub64(z[2], q2, b)
+		z[3], _ = bits.Sub64(z[3], q3, b)
+	}
+	return z
+}
+
 // Add adds two vectors element-wise and stores the result in self.
 // It panics if the vectors don't have the same length.
 func (vector *Vector) Add(a, b Vector) {
@@ -437,4 +457,26 @@ func (z *Element) Square(x *Element) *Element {
 		z[3], _ = bits.Sub64(z[3], q3, b)
 	}
 	return z
+}
+
+func mimcEncrypt(h, m, tmp *Element) {
+	for i := 0; i < 62; i++ {
+		// m = (m+k+c)^**17
+		tmp.Add(m, h).Add(tmp, &MIMCConstants[i])
+		m.Square(tmp).
+			Square(m).
+			Square(m).
+			Square(m).
+			Mul(m, tmp)
+	}
+	m.Add(m, h)
+}
+
+func mimcStep(h, m, c, tmp *Element) {
+	tmp.Add(m, h).Add(tmp, c)
+	m.Square(tmp).
+		Square(m).
+		Square(m).
+		Square(m).
+		Mul(m, tmp)
 }

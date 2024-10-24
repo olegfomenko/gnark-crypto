@@ -20,6 +20,7 @@ import (
 	"crypto/rand"
 	"encoding/json"
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"math/big"
 	"math/bits"
 
@@ -2893,4 +2894,236 @@ func approximateRef(x *Element) uint64 {
 
 	hi.Add(&hi, &lo)
 	return hi.Uint64()
+}
+
+func TestCustomAddCompared(t *testing.T) {
+	for i := 0; i < 100; i++ {
+		x, _ := new(Element).SetRandom()
+		y, _ := new(Element).SetRandom()
+
+		res1 := new(Element)
+		res2 := new(Element)
+
+		add(res1, x, y)
+		res2.Add(x, y)
+
+		assert.Equal(t, res1.Cmp(res2), 0)
+	}
+}
+
+func NativePow17(res, a *Element) {
+	res.Mul(a, a)     //2
+	res.Mul(res, res) //4
+	res.Mul(res, res) //8
+	res.Mul(res, res) //16
+	res.Mul(res, a)   //17
+}
+
+func BenchmarkPow1(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		x, _ := new(Element).SetRandom()
+		res := new(Element)
+		b.StartTimer()
+		pow17(res, x)
+	}
+}
+
+func BenchmarkPow2(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		x, _ := new(Element).SetRandom()
+		res := new(Element)
+		b.StartTimer()
+		NativePow17(res, x)
+	}
+}
+
+func BenchmarkAddASM(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		x, _ := new(Element).SetRandom()
+		y, _ := new(Element).SetRandom()
+		res := new(Element)
+		b.StartTimer()
+		add(res, x, y)
+	}
+}
+
+func BenchmarkAddNative(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		x, _ := new(Element).SetRandom()
+		y, _ := new(Element).SetRandom()
+		res := new(Element)
+		b.StartTimer()
+		res.AddNative(x, y)
+	}
+}
+
+func TestAddCompared(t *testing.T) {
+	for i := 0; i < 1000; i++ {
+		h1, _ := new(Element).SetRandom()
+		h2 := new(Element).Set(h1)
+
+		m1, _ := new(Element).SetRandom()
+		m2 := new(Element).Set(m1)
+
+		res1 := new(Element).Add(h1, m1)
+		res2 := new(Element).AddNative(h2, m2)
+
+		fmt.Println("res1=", res1)
+		fmt.Println("res2=", res2)
+
+		assert.Equal(t, 0, res1.Cmp(res2), fmt.Sprintf("Add check failed %d, %s %s", i, res1.String(), res2.String()))
+
+	}
+}
+
+func (z *Element) AddNative(x, y *Element) *Element {
+	var carry uint64
+	z[0], carry = bits.Add64(x[0], y[0], 0)
+	z[1], carry = bits.Add64(x[1], y[1], carry)
+	z[2], carry = bits.Add64(x[2], y[2], carry)
+	z[3], _ = bits.Add64(x[3], y[3], carry)
+
+	// if z ⩾ q → z -= q
+	if !z.smallerThanModulus() {
+		var b uint64
+		z[0], b = bits.Sub64(z[0], q0, 0)
+		z[1], b = bits.Sub64(z[1], q1, b)
+		z[2], b = bits.Sub64(z[2], q2, b)
+		z[3], _ = bits.Sub64(z[3], q3, b)
+	}
+	return z
+}
+
+func TestMIMC(t *testing.T) {
+
+	fmt.Println("Running test")
+
+	for i := 0; i < 10000; i++ {
+		t.Run(fmt.Sprintf("Random test %d", i), func(t *testing.T) {
+			h1, _ := new(Element).SetRandom()
+			h2 := new(Element).Set(h1)
+
+			m1, _ := new(Element).SetRandom()
+			m2 := new(Element).Set(m1)
+
+			var tmp Element
+
+			for i := 0; i < 62; i++ {
+				// m = (m+k+c)^**17
+				tmp.Add(m1, h1).Add(&tmp, &MIMCConstants[i])
+				m1.Square(&tmp).
+					Square(m1).
+					Square(m1).
+					Square(m1).
+					Mul(m1, &tmp)
+			}
+			m1.Add(m1, h1)
+
+			MIMCEncrypt(h2, m2)
+
+			fmt.Println("m1=", m1)
+			fmt.Println("m2=", m2)
+
+			assert.Equal(t, 0, m1.Cmp(m2), fmt.Sprintf("Failed random %d, %s %s", i, m1.String(), m2.String()))
+		})
+	}
+
+	for i := 0; i < 10000; i++ {
+		t.Run(fmt.Sprintf("Ordered test %d", i), func(t *testing.T) {
+			h1, _ := new(Element).SetRandom()
+			h2 := new(Element).Set(h1)
+
+			m1 := new(Element).SetInt64(int64(i))
+			m2 := new(Element).Set(m1)
+
+			var tmp Element
+
+			for i := 0; i < 62; i++ {
+				// m = (m+k+c)^**17
+				tmp.Add(m1, h1).Add(&tmp, &MIMCConstants[i])
+				m1.Square(&tmp).
+					Square(m1).
+					Square(m1).
+					Square(m1).
+					Mul(m1, &tmp)
+			}
+			m1.Add(m1, h1)
+
+			MIMCEncrypt(h2, m2)
+
+			fmt.Println("m1=", m1)
+			fmt.Println("m2=", m2)
+
+			assert.Equal(t, 0, m1.Cmp(m2), fmt.Sprintf("Failed ordered %d, %s %s", i, m1.String(), m2.String()))
+		})
+	}
+}
+
+func TestStepMIMC(t *testing.T) {
+
+	fmt.Println("Running test")
+
+	for i := 0; i < 10000; i++ {
+		h1, _ := new(Element).SetRandom()
+		h2 := new(Element).Set(h1)
+
+		m1, _ := new(Element).SetRandom()
+		m2 := new(Element).Set(m1)
+
+		c1, _ := new(Element).SetRandom()
+		c2 := new(Element).Set(c1)
+
+		var tmp Element
+
+		tmp.Add(m1, h1).Add(&tmp, c1)
+		m1.Square(&tmp).
+			Square(m1).
+			Square(m1).
+			Square(m1).
+			Mul(m1, &tmp)
+
+		MIMCStep(h2, m2, c2)
+
+		fmt.Println("m1=", m1)
+		fmt.Println("m2=", m2)
+
+		assert.Equal(t, 0, m1.Cmp(m2))
+	}
+}
+
+func BenchmarkStepASM(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		h1, _ := new(Element).SetRandom()
+		m1, _ := new(Element).SetRandom()
+		c1, _ := new(Element).SetRandom()
+		b.StartTimer()
+		MIMCStep(h1, m1, c1)
+	}
+}
+
+func BenchmarkStepNative(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		h1, _ := new(Element).SetRandom()
+		m1, _ := new(Element).SetRandom()
+		c1, _ := new(Element).SetRandom()
+		b.StartTimer()
+		MIMCStepNative(h1, m1, c1)
+	}
+}
+
+func MIMCStepNative(h1, m1, c1 *Element) {
+	var tmp Element
+
+	tmp.Add(m1, h1).Add(&tmp, c1)
+	m1.Square(&tmp).
+		Square(m1).
+		Square(m1).
+		Square(m1).
+		Mul(m1, &tmp)
 }
