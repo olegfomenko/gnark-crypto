@@ -626,5 +626,7 @@ func BenchmarkVortexAll(b *testing.B) {
 
 func TestSupportAVX(t *testing.T) {
 	fmt.Println("AVX512:", cpu.SupportAVX512)
+	cpu.Print()
+
 	fmt.Println("ADX:", cpu.SupportADX)
 }
