@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	SupportAVX512 = SupportADX && cpu.X86.HasAVX512 && cpu.X86.HasAVX512DQ && cpu.X86.HasAVX512VBMI2
+	SupportAVX512 = SupportADX && cpu.X86.HasAVX512 && cpu.X86.HasAVX512DQ
 )
 
 func Print() {
