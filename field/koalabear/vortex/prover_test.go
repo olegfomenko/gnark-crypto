@@ -359,8 +359,8 @@ func FuzzVortex(f *testing.F) {
 func BenchmarkVortexReal(b *testing.B) {
 
 	var (
-		numCol             = 1 << 19
-		numRow             = 1 << 11
+		numCol             = 1 << 11
+		numRow             = 1 << 19
 		invRate            = 2
 		numSelectedColumns = 256
 		wg                 sync.WaitGroup
