@@ -3,6 +3,8 @@ package vortex
 import (
 	"crypto/sha256"
 	"encoding/binary"
+	"fmt"
+	"github.com/consensys/gnark-crypto/utils/cpu"
 	"hash"
 	"math/rand/v2"
 	"sync"
@@ -374,6 +376,9 @@ func BenchmarkVortexReal(b *testing.B) {
 		selectedColumns[i] = topRng.IntN(numCol * 2)
 	}
 
+	x := randFext(topRng)
+	ys := make([]fext.E4, numRow)
+
 	// Generating the matrix and filling it with PRNG elements on a single-thread would
 	// be very time-consuming so we parallelize it, giving it different seeds for each
 	// row.
@@ -391,6 +396,8 @@ func BenchmarkVortexReal(b *testing.B) {
 			for j := range m[row] {
 				m[row][j] = randElement(rng)
 			}
+
+			ys[row], _ = EvalBasePolyLagrange(m[row], x)
 		}(row)
 	}
 
@@ -424,14 +431,199 @@ func BenchmarkVortexReal(b *testing.B) {
 		}
 	})
 
+	var proof *Proof
+
 	b.Run("opening-columns", func(b *testing.B) {
 		b.ResetTimer()
 		for i := 0; i < b.N; i++ {
-			_, err := proverState.OpenColumns(selectedColumns)
+			proof, err = proverState.OpenColumns(selectedColumns)
 			if err != nil {
 				b.Fatal(err)
 			}
 		}
 	})
 
+	_ = proof
+
+	b.Run("verify", func(b *testing.B) {
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			err = params.Verify(VerifierInput{
+				Proof:           proof,
+				MerkleRoot:      proverState.GetCommitment(),
+				ClaimedValues:   ys,
+				EvaluationPoint: x,
+				Alpha:           alpha,
+				SelectedColumns: selectedColumns,
+			})
+			if err != nil {
+				b.Fatal(err)
+			}
+		}
+	})
+
+}
+
+func BenchmarkVortexAll(b *testing.B) {
+
+	commit := func(numCol int, numRow int, b *testing.B) {
+		var (
+			rng = rand.New(rand.NewChaCha8([32]byte{}))
+		)
+
+		for i := 0; i < b.N; i++ {
+			b.StopTimer()
+			var (
+				m = make([][]koalabear.Element, numRow)
+			)
+
+			for i := range m {
+				m[i] = make([]koalabear.Element, numCol)
+				for j := range m[i] {
+					m[i][j] = randElement(rng)
+				}
+			}
+
+			params, _ := NewParams(numCol, numRow, nil, 2, 0)
+
+			b.StartTimer()
+
+			state, err := Commit(params, m)
+			if err != nil {
+				panic(err)
+			}
+			state.Params.SizeCodeWord()
+		}
+	}
+
+	open := func(numCol int, numRow int, b *testing.B) {
+		var (
+			rng = rand.New(rand.NewChaCha8([32]byte{}))
+		)
+
+		for i := 0; i < b.N; i++ {
+			b.StopTimer()
+			var (
+				m = make([][]koalabear.Element, numRow)
+			)
+
+			for i := range m {
+				m[i] = make([]koalabear.Element, numCol)
+				for j := range m[i] {
+					m[i][j] = randElement(rng)
+				}
+			}
+
+			params, _ := NewParams(numCol, numRow, nil, 2, 0)
+
+			state, err := Commit(params, m)
+			if err != nil {
+				panic(err)
+			}
+
+			topRng := rand.New(rand.NewChaCha8([32]byte{}))
+			alpha := randFext(topRng)
+			selectedColumns := make([]int, 256)
+
+			for i := range selectedColumns {
+				selectedColumns[i] = topRng.IntN(numCol * 2)
+			}
+
+			b.StartTimer()
+			state.OpenLinComb(alpha)
+			state.OpenColumns(selectedColumns)
+		}
+	}
+
+	verify := func(numCol int, numRow int, b *testing.B) {
+		var (
+			rng = rand.New(rand.NewChaCha8([32]byte{}))
+		)
+
+		for i := 0; i < b.N; i++ {
+			b.StopTimer()
+			var (
+				m = make([][]koalabear.Element, numRow)
+			)
+
+			x := randFext(rng)
+			ys := make([]fext.E4, numRow)
+
+			for i := range m {
+				m[i] = make([]koalabear.Element, numCol)
+				for j := range m[i] {
+					m[i][j] = randElement(rng)
+				}
+
+				ys[i], _ = EvalBasePolyLagrange(m[i], x)
+			}
+
+			params, _ := NewParams(numCol, numRow, nil, 2, 0)
+
+			state, err := Commit(params, m)
+			if err != nil {
+				panic(err)
+			}
+
+			topRng := rand.New(rand.NewChaCha8([32]byte{}))
+			alpha := randFext(topRng)
+			selectedColumns := make([]int, 256)
+
+			for i := range selectedColumns {
+				selectedColumns[i] = topRng.IntN(numCol * 2)
+			}
+
+			state.OpenLinComb(alpha)
+			proof, err := state.OpenColumns(selectedColumns)
+
+			b.StartTimer()
+
+			err = params.Verify(VerifierInput{
+				Proof:           proof,
+				MerkleRoot:      state.GetCommitment(),
+				ClaimedValues:   ys,
+				EvaluationPoint: x,
+				Alpha:           alpha,
+				SelectedColumns: selectedColumns,
+			})
+
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+
+	b.Run("Commit (11, 19)", func(b *testing.B) {
+		b.ResetTimer()
+		var (
+			numCol = 1 << 11
+			numRow = 1 << 19
+		)
+
+		commit(numCol, numRow, b)
+	})
+
+	b.Run("Open (11, 19)", func(b *testing.B) {
+		b.ResetTimer()
+		var (
+			numCol = 1 << 11
+			numRow = 1 << 19
+		)
+
+		open(numCol, numRow, b)
+	})
+
+	b.Run("Verify (11, 19)", func(b *testing.B) {
+		b.ResetTimer()
+		var (
+			numCol = 1 << 11
+			numRow = 1 << 19
+		)
+
+		verify(numCol, numRow, b)
+	})
+}
+
+func TestSupportAVX(t *testing.T) {
+	fmt.Println("AVX512:", cpu.SupportAVX512)
 }
