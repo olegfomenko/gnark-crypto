@@ -7,6 +7,7 @@ import (
 	"github.com/consensys/gnark-crypto/utils/cpu"
 	"hash"
 	"math/rand/v2"
+	"runtime"
 	"sync"
 	"testing"
 
@@ -469,4 +470,7 @@ func TestSupportAVX(t *testing.T) {
 	cpu.Print()
 
 	fmt.Println("ADX:", cpu.SupportADX)
+
+	fmt.Println(runtime.NumCPU())
+	fmt.Println(runtime.GOMAXPROCS(0))
 }
