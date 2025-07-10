@@ -8,7 +8,7 @@ import (
 // Execute process in parallel the work function
 func Execute(nbIterations int, work func(int, int), maxCpus ...int) {
 
-	nbTasks := runtime.NumCPU()
+	nbTasks := runtime.GOMAXPROCS(0)
 	if len(maxCpus) == 1 {
 		nbTasks = maxCpus[0]
 		if nbTasks < 1 {
